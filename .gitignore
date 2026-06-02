@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Caches
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Build / venv
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Generated reports
+reports/
+*.report.html

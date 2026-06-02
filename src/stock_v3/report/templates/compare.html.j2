@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Comparison — {{ cols | map(attribute='ticker') | join(' · ') }}</title>
+<style>
+{{ axis_css | safe }}
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: clamp(16px, 4vw, 36px) clamp(12px, 3vw, 24px) 72px; }
+.head { margin-bottom: 20px; }
+.head h1 { font-size: clamp(24px, 6vw, 32px); font-family: var(--font-sans); letter-spacing: -0.02em; }
+.head .sub { color: var(--text-tertiary); font-size: var(--fs-sm); margin-top: 6px; }
+
+/* ticker header cards */
+.cols { display: grid; grid-template-columns: repeat({{ n }}, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tcard { padding: 18px; background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg); }
+.tcard .tk { font-size: var(--fs-h2); font-weight: 700; font-family: var(--font-sans); letter-spacing: -0.01em; }
+.tcard .co { color: var(--text-tertiary); font-size: var(--fs-xs); margin: 2px 0 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tcard .px { font-family: var(--font-mono); font-size: var(--fs-h3); font-weight: 600;
+  font-variant-numeric: tabular-nums; }
+.tcard .vd { margin-top: 12px; }
+.tcard .cv { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: 8px; }
+
+/* comparison matrix */
+.matrix-card { padding: 0; overflow-x: auto; }
+table.matrix { width: 100%; border-collapse: collapse; }
+table.matrix th, table.matrix td { padding: 13px 16px; text-align: right;
+  border-bottom: 1px solid var(--border-subtle); }
+table.matrix thead th { position: sticky; top: 0; background: var(--bg-surface);
+  font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-tertiary); font-weight: 600; z-index: 2; }
+table.matrix th.metric, table.matrix td.metric { text-align: left;
+  position: sticky; left: 0; background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: var(--fs-sm); font-weight: 500; z-index: 1; min-width: 150px; }
+table.matrix thead th.metric { background: var(--bg-surface); z-index: 3; }
+table.matrix td.figure { font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero;
+  font-size: var(--fs-sm); color: var(--text-primary); }
+table.matrix td.best { color: var(--accent-hover); font-weight: 600;
+  background: var(--accent-soft); }
+table.matrix tr:last-child td { border-bottom: none; }
+table.matrix td.best::after { content: " ●"; color: var(--accent); font-size: 8px; vertical-align: middle; }
+
+.note { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 16px; line-height: 1.5; text-align: center; }
+.disclaimer { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 12px; text-align: center; }
+
+@media (max-width: 720px) {
+  .cols { grid-template-columns: repeat({{ n }}, minmax(140px, 1fr)); overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="head">
+    <h1>Ticker Comparison</h1>
+    <div class="sub">
+      {{ cols | length }} names side by side · best metric in each row marked
+      {% if generated_at %} · {{ generated_at.strftime("%Y-%m-%d %H:%M") }}{% endif %}
+    </div>
+  </header>
+
+  <div class="cols">
+    {% for c in cols %}
+    <div class="tcard">
+      <div class="tk">{{ c.ticker }}</div>
+      <div class="co">{{ c.company }}</div>
+      <div class="px">{{ c.price }}</div>
+      <div class="vd"><span class="verdict {{ c.verdict_class }}">{{ c.verdict }}</span></div>
+      <div class="cv">{{ c.conviction }}/100 · {{ c.sector }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="axis-card matrix-card">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th class="metric">Metric</th>
+          {% for c in cols %}<th>{{ c.ticker }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td class="metric">{{ row.label }}</td>
+          {% for cell in row.cells %}
+          <td class="figure {{ 'best' if cell.best else '' }}">{{ cell.text }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="note">Best-cell highlighting is directional (e.g. higher conviction / lower P/E wins)
+  and ignores neutral rows like RSI and volatility. Bull/Bear prob shows scenario skew.</p>
+  <p class="disclaimer">Structured research output — not financial advice. Free, delayed data.</p>
+
+</div>
+</body>
+</html>
