@@ -24,8 +24,11 @@ app = FastAPI(title="stock_v3")
 
 
 def main() -> None:
+    import os
     import uvicorn
-    uvicorn.run("stock_v3.server:app", host="127.0.0.1", port=8080, reload=False)
+    port = int(os.environ.get("PORT", 8080))
+    host = "0.0.0.0" if os.environ.get("PORT") else "127.0.0.1"
+    uvicorn.run("stock_v3.server:app", host=host, port=port, reload=False)
 _settings = load_settings()
 _cache = Cache(_settings.cache_dir)
 _executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
