@@ -15,8 +15,7 @@
 
 /* ticker header cards */
 .cols { display: grid; grid-template-columns: repeat({{ n }}, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-.tcard { padding: 18px; background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg); }
+.tcard { padding: 18px; }
 .tcard .tk { font-size: var(--fs-h2); font-weight: 700; font-family: var(--font-sans); letter-spacing: -0.01em; }
 .tcard .co { color: var(--text-tertiary); font-size: var(--fs-xs); margin: 2px 0 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -53,7 +52,7 @@ table.matrix td.best::after { content: " ●"; color: var(--accent); font-size: 
 }
 </style>
 </head>
-<body>
+<body class="glass">
 <div class="wrap">
 
   <header class="head">
@@ -66,7 +65,7 @@ table.matrix td.best::after { content: " ●"; color: var(--accent); font-size: 
 
   <div class="cols">
     {% for c in cols %}
-    <div class="tcard">
+    <div class="tcard axis-card">
       <div class="tk">{{ c.ticker }}</div>
       <div class="co">{{ c.company }}</div>
       <div class="px">{{ c.price }}</div>

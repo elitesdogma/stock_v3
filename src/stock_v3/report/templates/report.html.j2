@@ -9,7 +9,7 @@
 {{ axis_css | safe }}
 
 /* ---- report layout (AXIS, mobile-first) ---- */
-body { background: var(--bg-app); padding: 0; }
+body { padding: 0; }  /* glass material supplies the gradient backdrop */
 .wrap { max-width: 880px; margin: 0 auto; padding: clamp(16px, 4vw, 40px) clamp(14px, 4vw, 28px) 80px; }
 .report-card { margin: 14px 0; padding: clamp(18px, 4vw, 26px); }
 section { scroll-margin-top: 16px; }
@@ -156,7 +156,7 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
 }
 </style>
 </head>
-<body>
+<body class="glass">
 <div class="wrap">
 
   <header class="masthead">
