@@ -4,14 +4,23 @@
     {
       "name": "stock-v3-web",
       "runtimeExecutable": "/opt/homebrew/bin/uv",
-      "runtimeArgs": ["run", "serve"],
+      "runtimeArgs": [
+        "run",
+        "serve"
+      ],
       "port": 8080
     },
     {
       "name": "axis-reference",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8771", "--directory", "/tmp/wg2"],
-      "port": 8771
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8772",
+        "--directory",
+        "/tmp/wg3"
+      ],
+      "port": 8772
     }
   ]
 }

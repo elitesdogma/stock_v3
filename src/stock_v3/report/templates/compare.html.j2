@@ -101,5 +101,19 @@ table.matrix td.best::after { content: " ●"; color: var(--accent); font-size: 
   <p class="disclaimer">Structured research output — not financial advice. Free, delayed data.</p>
 
 </div>
+
+<script>
+(function () {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.body.classList.add('anim');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.axis-card'));
+  cards.forEach(function (el) { el.classList.add('reveal'); });
+  if (!('IntersectionObserver' in window)) { cards.forEach(function (el){ el.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
+  cards.forEach(function (el, i) { el.style.transitionDelay = Math.min(i, 6) * 55 + 'ms'; io.observe(el); });
+})();
+</script>
 </body>
 </html>

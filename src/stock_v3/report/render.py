@@ -245,7 +245,9 @@ def _trade_plan_block(r: ResearchReport) -> str:
 
     def row(key: str, value: str, accent: bool = False) -> str:
         cls = "pv accent" if accent else "pv"
-        return f'<span class="pk">{escape(key):<22}</span><span class="{cls}">{escape(value)}</span>'
+        # padded key for the desktop `pre` alignment; the wrapper div lets mobile flex it.
+        return (f'<div class="plan-row"><span class="pk">{escape(key):<22}</span>'
+                f'<span class="{cls}">{escape(value)}</span></div>')
 
     entry = f"{p.entry_zone[0]} – {p.entry_zone[1]}" if p.entry_zone else "—"
     targets = " / ".join(_fmt_money(t) for t in p.targets) if p.targets else "—"
@@ -258,22 +260,22 @@ def _trade_plan_block(r: ResearchReport) -> str:
         row("Ticker", f"{q.ticker} — {q.company}", accent=True),
         row("Current price", _fmt_money(q.price)),
         row("Sector", f"{q.sector or '—'} / {q.industry or '—'}"),
-        "",
+        '<div class="plan-gap"></div>',
         row("Entry zone", entry),
         row("Ideal buy", _fmt_money(p.ideal_buy)),
         row("Stop loss", _fmt_money(p.stop_loss)),
         row("Targets (T1/T2/T3)", targets),
-        "",
+        '<div class="plan-gap"></div>',
         row("Risk / Reward", rr),
         row("Holding period", p.holding_period),
         row("Allocation", alloc),
         row("Position size", size),
-        "",
+        '<div class="plan-gap"></div>',
         row("Next catalyst", catalyst),
         row("Confidence", f"{r.verdict.confidence:.0f}/100 ({r.verdict.confidence_band})"),
         row("Verdict", r.verdict.label, accent=True),
     ]
-    return "\n".join(lines)
+    return "".join(lines)
 
 
 def _rationale(r: ResearchReport, category: str) -> str:

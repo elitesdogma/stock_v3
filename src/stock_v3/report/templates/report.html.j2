@@ -11,11 +11,32 @@
 /* ---- report layout (AXIS, mobile-first) ---- */
 body { padding: 0; }  /* glass material supplies the gradient backdrop */
 .wrap { max-width: 880px; margin: 0 auto; padding: clamp(16px, 4vw, 40px) clamp(14px, 4vw, 28px) 80px; }
-.report-card { margin: 14px 0; padding: clamp(18px, 4vw, 26px); }
+.report-card { margin: 14px 0; padding: clamp(16px, 4vw, 24px); }
 section { scroll-margin-top: 16px; }
 
 h2.sec { font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: var(--tracking-label);
-  color: var(--text-tertiary); font-weight: 600; margin: 0 0 14px; }
+  color: var(--text-tertiary); font-weight: 600; margin: 0 0 12px; }
+
+/* disclosure: collapses the full data/verification appendix */
+details.disclosure { padding: 0; overflow: hidden; }
+details.disclosure > summary { list-style: none; cursor: pointer; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  user-select: none; -webkit-tap-highlight-color: transparent; }
+details.disclosure > summary::-webkit-details-marker { display: none; }
+details.disclosure > summary .sec { margin: 0; }
+details.disclosure > summary .disc-hint { font-size: var(--fs-xs); color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px; }
+details.disclosure > summary .disc-hint::after { content: "›"; font-size: 18px; line-height: 1;
+  transition: transform var(--dur) var(--ease-out); transform: rotate(90deg); }
+details.disclosure[open] > summary .disc-hint::after { transform: rotate(-90deg); }
+details.disclosure > summary:hover { background: var(--bg-hover); }
+.disclosure-body { padding: 0 16px 8px; }
+/* inner sections lose their own glass — they're flat rows inside the one disclosure card */
+.disclosure-body .report-card { background: transparent !important; backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important; box-shadow: none !important;
+  border: none !important; border-top: 1px solid var(--border-subtle) !important;
+  border-radius: 0 !important; margin: 0 !important; padding: 16px 0 !important; }
+.disclosure-body .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
 
 /* masthead */
 .masthead { display: flex; justify-content: space-between; align-items: flex-start;
@@ -120,9 +141,11 @@ ul.risks li { margin: 7px 0; line-height: 1.5; font-size: var(--fs-sm); color: v
 
 /* trade plan */
 .plan { font-family: var(--font-mono); font-size: var(--fs-sm);
-  background: var(--bg-base); color: var(--text-primary); border: 1px solid var(--border-default);
-  border-radius: var(--radius-md); padding: 20px 22px; overflow-x: auto; line-height: 1.75;
-  white-space: pre; font-variant-numeric: tabular-nums; }
+  background: var(--bg-inset); color: var(--text-primary); border: 1px solid var(--border-default);
+  border-radius: var(--radius-md); padding: 20px 22px; line-height: 1.7;
+  font-variant-numeric: tabular-nums; }
+.plan-row { white-space: pre; }  /* desktop: padded-key column alignment */
+.plan-gap { height: 12px; }
 .plan .pk { color: var(--text-tertiary); } .plan .pv { color: var(--text-primary); font-weight: 600; }
 .plan .accent { color: var(--accent-hover); }
 
@@ -141,13 +164,51 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
 .disclaimer { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 28px; line-height: 1.55;
   text-align: center; }
 
-@media (max-width: 620px) {
+@media (max-width: 640px) {
+  /* larger, more readable type on phones */
+  :root { --fs-body: 16px; --fs-sm: 14px; --fs-xs: 13px; --fs-micro: 12px; --fs-h3: 19px; }
+  .wrap { padding: 16px 14px 64px; }
+  .report-card { padding: 18px 16px; margin: 12px 0; }
+  h2.sec { font-size: 12px; margin-bottom: 12px; }
+
   .hero { grid-template-columns: 1fr; gap: 16px; }
   .scen { grid-template-columns: 1fr; }
-  .masthead .px { text-align: left; }
-  ul.cat li { grid-template-columns: 1fr; gap: 2px; }
+  .masthead .px { text-align: left; margin-top: 4px; }
+  .masthead h1 { font-size: 32px; }
+
+  /* key/value rows: a touch more breathing room */
+  .kv .row > * { padding: 12px 0; }
+  .kv .key { font-size: 14px; } .kv .val { font-size: 14px; }
+
+  ul.cat li { grid-template-columns: 1fr; gap: 2px; padding: 13px 0; }
   ul.cat .sc { justify-self: start; }
-  .cat-ev { grid-template-columns: 80px 1fr auto; }
+  .cat-ev { grid-template-columns: 76px 1fr auto; padding: 12px 0; }
+
+  /* DATA COVERAGE: reflow table into stacked labelled cards */
+  .cov, .cov thead, .cov tbody, .cov tr, .cov td { display: block; width: 100%; }
+  .cov thead { position: absolute; left: -9999px; }   /* hide header row */
+  .cov tr { background: var(--bg-inset); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 10px; }
+  .cov td { border: none !important; padding: 5px 0 !important; display: flex;
+    justify-content: space-between; align-items: baseline; gap: 16px; text-align: right; }
+  .cov td::before { content: attr(data-label); color: var(--text-tertiary);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; text-align: left;
+    flex-shrink: 0; }
+  .cov td.cov-layer { font-weight: 600; font-size: 16px; padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--border-subtle) !important; margin-bottom: 4px; }
+  .cov td.cov-layer::before { content: ""; }
+  .cov td[data-label="Notes"] { text-align: right; }
+
+  /* TRADE PLAN: flex each row so values wrap instead of overflowing */
+  .plan { padding: 16px; font-size: 13.5px; }
+  .plan-row { white-space: normal; display: flex; justify-content: space-between;
+    gap: 14px; align-items: baseline; padding: 4px 0; }
+  .plan .pk { white-space: nowrap; flex-shrink: 0; }
+  .plan .pv { text-align: right; word-break: break-word; }
+
+  /* probability calculator: stack the three readouts */
+  .cone-probs { grid-template-columns: 1fr; gap: 10px; }
+  .cone-htab { flex: 1; min-width: 64px; }
 }
 @media print {
   body { background: #fff; }
@@ -202,6 +263,73 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
     </div>
   </div>
 
+
+  <section class="axis-card report-card" id="scenarios">
+    <h2 class="sec">Scenario Analysis &amp; Probability Cone</h2>
+    {% if has_cone %}
+    <div class="cone-legend">
+      <span><span class="sw" style="background:color-mix(in oklab,var(--accent) 16%,transparent)"></span>±1σ (68%)</span>
+      <span><span class="sw" style="background:color-mix(in oklab,var(--accent) 8%,transparent)"></span>±2σ (95%)</span>
+      <span><span class="sw" style="background:var(--positive)"></span>Bull</span>
+      <span><span class="sw" style="background:var(--accent)"></span>Base</span>
+      <span><span class="sw" style="background:var(--critical)"></span>Bear</span>
+    </div>
+    <div class="cone-chart-wrap">{{ cone_svg | safe }}</div>
+    {% else %}
+    {{ scenario_svg | safe }}
+    {% endif %}
+
+    <div class="scen">
+      {% for s in r.scenarios %}
+      <div class="s {{ s.name | lower }}">
+        <div class="name">{{ s.name }} Case</div>
+        <div class="pt">{{ fmt_money(s.price_target) }}</div>
+        <div class="pr">{{ (s.probability * 100) | round | int }}% probability</div>
+        <div class="dr">{{ s.drivers }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if cone_widget %}
+    <div style="margin-top:18px">{{ cone_widget | safe }}</div>
+    <p class="src-note">Probability cone uses the {{ r.probability_cone.vol_source }} volatility
+    estimate ({{ fmt_pct(r.probability_cone.annual_vol) }} annualized) and a zero-drift lognormal
+    model — the thinkorswim/Schwab standard (±1σ ≈ 68%). It maps dispersion, not a directional forecast.</p>
+    {% endif %}
+  </section>
+
+  <section class="axis-card report-card" id="tradeplan">
+    <h2 class="sec">Trade Plan &amp; Position Sizing</h2>
+    {% if r.narrative.portfolio_impact %}<p style="color:var(--text-secondary);font-size:var(--fs-sm);margin-bottom:14px">{{ r.narrative.portfolio_impact }}</p>{% endif %}
+    <div class="plan">{{ trade_plan_block | safe }}</div>
+  </section>
+
+  <section class="axis-card report-card" id="scorecard">
+    <h2 class="sec">Institutional Scorecard</h2>
+    {{ scorecard_svg | safe }}
+    <ul class="cat">
+      {% for cat in r.scorecard %}
+      <li><span class="nm">{{ cat.name }}</span><span class="rt">{{ cat.rationale }}</span><span class="sc">{{ cat.score }}/10</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="axis-card report-card" id="verdict">
+    <h2 class="sec">Final Verdict</h2>
+    <div class="hero">
+      <div class="gauge-wrap">
+        <span class="verdict {{ verdict_class }}" style="font-size:var(--fs-h3)">{{ r.verdict.label }}</span>
+        <div style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-tertiary);margin-top:8px">
+          Conviction {{ r.verdict.conviction_score }}/100</div>
+      </div>
+      <div><p class="lede">{{ r.narrative.thesis }}</p></div>
+    </div>
+  </section>
+
+
+  <details class="disclosure report-card axis-card">
+    <summary><span class="sec">Full data &amp; verification</span><span class="disc-hint">tap to expand</span></summary>
+    <div class="disclosure-body">
   <section class="axis-card report-card" id="coverage">
     <h2 class="sec">Data Coverage &amp; Freshness</h2>
     <table class="cov">
@@ -209,10 +337,11 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
       <tbody>
       {% for c in r.coverage %}
         <tr>
-          <td>{{ c.layer }}</td><td>{{ c.source }}</td>
-          <td><span class="pill s-{{ c.status }}">{{ c.status }}</span></td>
-          <td class="mono">{{ c.as_of }}</td>
-          <td style="color:var(--text-tertiary)">{{ c.note or "—" }}</td>
+          <td data-label="Layer" class="cov-layer">{{ c.layer }}</td>
+          <td data-label="Source">{{ c.source }}</td>
+          <td data-label="Status"><span class="pill s-{{ c.status }}">{{ c.status }}</span></td>
+          <td data-label="As of" class="mono">{{ c.as_of }}</td>
+          <td data-label="Notes" style="color:var(--text-tertiary)">{{ c.note or "—" }}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -338,68 +467,8 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
     <ul class="risks">{% for risk in r.key_risks %}<li>{{ risk }}</li>{% endfor %}</ul>
     {% if r.narrative.risks %}<p style="margin-top:10px;color:var(--text-secondary);font-size:var(--fs-sm)">{{ r.narrative.risks }}</p>{% endif %}
   </section>
-
-  <section class="axis-card report-card" id="scenarios">
-    <h2 class="sec">Scenario Analysis &amp; Probability Cone</h2>
-    {% if has_cone %}
-    <div class="cone-legend">
-      <span><span class="sw" style="background:color-mix(in oklab,var(--accent) 16%,transparent)"></span>±1σ (68%)</span>
-      <span><span class="sw" style="background:color-mix(in oklab,var(--accent) 8%,transparent)"></span>±2σ (95%)</span>
-      <span><span class="sw" style="background:var(--positive)"></span>Bull</span>
-      <span><span class="sw" style="background:var(--accent)"></span>Base</span>
-      <span><span class="sw" style="background:var(--critical)"></span>Bear</span>
     </div>
-    <div class="cone-chart-wrap">{{ cone_svg | safe }}</div>
-    {% else %}
-    {{ scenario_svg | safe }}
-    {% endif %}
-
-    <div class="scen">
-      {% for s in r.scenarios %}
-      <div class="s {{ s.name | lower }}">
-        <div class="name">{{ s.name }} Case</div>
-        <div class="pt">{{ fmt_money(s.price_target) }}</div>
-        <div class="pr">{{ (s.probability * 100) | round | int }}% probability</div>
-        <div class="dr">{{ s.drivers }}</div>
-      </div>
-      {% endfor %}
-    </div>
-
-    {% if cone_widget %}
-    <div style="margin-top:18px">{{ cone_widget | safe }}</div>
-    <p class="src-note">Probability cone uses the {{ r.probability_cone.vol_source }} volatility
-    estimate ({{ fmt_pct(r.probability_cone.annual_vol) }} annualized) and a zero-drift lognormal
-    model — the thinkorswim/Schwab standard (±1σ ≈ 68%). It maps dispersion, not a directional forecast.</p>
-    {% endif %}
-  </section>
-
-  <section class="axis-card report-card" id="tradeplan">
-    <h2 class="sec">Trade Plan &amp; Position Sizing</h2>
-    {% if r.narrative.portfolio_impact %}<p style="color:var(--text-secondary);font-size:var(--fs-sm);margin-bottom:14px">{{ r.narrative.portfolio_impact }}</p>{% endif %}
-    <div class="plan">{{ trade_plan_block | safe }}</div>
-  </section>
-
-  <section class="axis-card report-card" id="scorecard">
-    <h2 class="sec">Institutional Scorecard</h2>
-    {{ scorecard_svg | safe }}
-    <ul class="cat">
-      {% for cat in r.scorecard %}
-      <li><span class="nm">{{ cat.name }}</span><span class="rt">{{ cat.rationale }}</span><span class="sc">{{ cat.score }}/10</span></li>
-      {% endfor %}
-    </ul>
-  </section>
-
-  <section class="axis-card report-card" id="verdict">
-    <h2 class="sec">Final Verdict</h2>
-    <div class="hero">
-      <div class="gauge-wrap">
-        <span class="verdict {{ verdict_class }}" style="font-size:var(--fs-h3)">{{ r.verdict.label }}</span>
-        <div style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-tertiary);margin-top:8px">
-          Conviction {{ r.verdict.conviction_score }}/100</div>
-      </div>
-      <div><p class="lede">{{ r.narrative.thesis }}</p></div>
-    </div>
-  </section>
+  </details>
 
   <p class="disclaimer">
     Generated by stock_v3 on {{ r.generated_at.strftime("%Y-%m-%d %H:%M") }} from free, delayed
@@ -408,5 +477,30 @@ ul.cat .sc { font-family: var(--font-mono); font-weight: 600; font-variant-numer
   </p>
 
 </div>
+
+<script>
+/* liquid-glass motion: scroll-reveal (frost + rise) + hero ambient drift.
+   Self-contained, honours prefers-reduced-motion via the CSS gate. */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  document.body.classList.add('anim');
+  // ambient drift inside the verdict hero card
+  var hero = document.querySelector('#summary.axis-card');
+  if (hero && !hero.querySelector(':scope > .liquid')) {
+    var l = document.createElement('i'); l.className = 'liquid'; hero.insertBefore(l, hero.firstChild);
+  }
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.axis-card'));
+  cards.forEach(function (el) { el.classList.add('reveal'); });
+  if (!('IntersectionObserver' in window)) { cards.forEach(function (el){ el.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in'); io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
+  cards.forEach(function (el, i) { el.style.transitionDelay = Math.min(i, 6) * 55 + 'ms'; io.observe(el); });
+})();
+</script>
 </body>
 </html>
